@@ -8,6 +8,7 @@ import {
   Button,
   Text,
   Badge,
+  TableCaption
 } from "@chakra-ui/react";
 import PropTypes from "prop-types";
 import { API_ENDPOINT,  } from "../Context/Config";
@@ -56,15 +57,18 @@ const Tabel = (props) => {
           icon: "success",
         });
         fetchData()
-        console.log(dataTim)
+     
       } else {
-        ""
+        swal("Data Gagal Dihapus ", {
+          icon: "error",
+        });
       }
    
   };
 
   return (
     <Table maxWidth={{base:"40%",lg:"80%"}} variant="simple">
+    
       <Thead bgColor={"brand.utama"}>
         <Tr>
           <Th color={"white"} textAlign={"center"}>
@@ -127,12 +131,20 @@ const Tabel = (props) => {
             </Tr>
           ))
         )}
+         <Tr>
+          <Td fontWeight={"bold"} fontSize={"xl"} colSpan={"4"}>{
+               `Total Pemain :   ${dataTim.pemains.length}`
+            }
+  
+          </Td>
+        </Tr>
         <Tr>
           <Td colSpan={"4"}>
             <TambahPemain dataTim={dataTim} fetchData={fetchData} />
           </Td>
         </Tr>
       </Tbody>
+     
     </Table>
   );
 };

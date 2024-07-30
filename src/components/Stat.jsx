@@ -5,7 +5,7 @@ const StatCard = (props) => {
   return (
     <Stat
     bgColor={"white"}
-    mt={"12"}
+    mt={"2"}
     borderRadius={"2xl"}
     shadow={"xl"}
    

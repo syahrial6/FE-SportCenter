@@ -24,9 +24,11 @@ export const Parent = (props) => {
       const decode = jwtDecode(response.data.token);
       
      
-      setData(decode);
+      setData(response.data.user);
       localStorage.setItem("token", response.data.token);
-      navigasiLogin(decode);
+      
+      navigasiLogin(data)
+      ;
       
     
       // Tandai bahwa pengguna sudah login
@@ -55,7 +57,12 @@ export const Parent = (props) => {
         navigate("/dashboard/reservasi")
       }
       else {
-        navigate(`/profile/${data.id}`);
+        if (data.tims.length === 0) {
+          navigate(`/profile/${data.id}`);
+        } else {
+          navigate("/sewa")
+        }
+       
       }
     } else {
       navigate(`/verifikasi/${data.email}`);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import WithAction from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { Box, Text, Button ,Input} from "@chakra-ui/react";
+import { Box, Text, Button, Input } from "@chakra-ui/react";
 import axios from "axios";
 import { API_ENDPOINT } from "../Context/Config";
 import Loading from "../components/Loading";
@@ -18,20 +18,20 @@ const KelolaUser = () => {
   const [loading, setLoading] = useState(true);
   console.log(dataUser);
 
- 
-
   useEffect(() => {
     setLoading(true);
-    getUser()
+    getUser();
     setLoading(false);
   }, [search]);
 
-  
-
   const getUser = async () => {
     try {
-      const response = await axios.get(`${API_ENDPOINT}/users?search=${search}`);
-      const array2 = response.data.users.filter((item) => item.role !== "admin");
+      const response = await axios.get(
+        `${API_ENDPOINT}/users?search=${search}`
+      );
+      const array2 = response.data.users.filter(
+        (item) => item.role !== "admin"
+      );
       setDataUser(array2);
     } catch (error) {
       console.log(error.response);
@@ -56,8 +56,6 @@ const KelolaUser = () => {
       }
     }
   };
-
-  
 
   const columns = [
     {
@@ -95,13 +93,13 @@ const KelolaUser = () => {
       cell: (row) => (
         <Box display={"flex"} gap={"2"}>
           <RouterLink to={`/profile/${row.id}`}>
-            <Button bgColor={"blue.300"}>
-              <FaInfo />
+            <Button bgColor={"blue.500"}>
+              <FaInfo fill="white" />
             </Button>
           </RouterLink>
 
-          <Button onClick={()=> hapusUser(row.id)} bgColor={"red.400"}>
-            <AiFillDelete />
+          <Button onClick={() => hapusUser(row.id)} bgColor={"red.500"}>
+            <AiFillDelete fill="white" />
           </Button>
         </Box>
       ), // Tombol aksi
@@ -127,15 +125,15 @@ const KelolaUser = () => {
         ) : (
           <Box m={"4"} p={"4"} bgColor={"white"} overflowX={"auto"}>
             <Box display={"flex"} justifyContent={"flex-end"}>
-        <Input
-          type="text"
-          placeholder="Search"
-          w={"30%"}
-          h={"15%"}
-          onChange={(e)=> setSearch(e.target.value)}
-          
-        />
-      </Box>
+              <Input
+                type="text"
+                placeholder="Search"
+                w={"30%"}
+                h={"15%"}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              
+            </Box>
             <DataTable
               columns={columns}
               data={dataUser}
@@ -143,7 +141,7 @@ const KelolaUser = () => {
               responsive
             />
           </Box>
-        )  }
+        )}
       </Sidebar>
     </>
   );

@@ -13,13 +13,8 @@ import ModalEditJamMain from "../components/ModalEditJamMain";
 
 const KelolaJamMain = () => {
   const [jamMain, setJamMain] = useState([]);
-  const indexJamMain = jamMain.map((item, index) => ({
-    urut: index + 1,
-    sesi: item.sesi,
-    jamMulai: item.jamMulai,
-    jamSelesai: item.jamSelesai,
-  }));
-
+  const sorting = jamMain.sort((a, b) => a.urutan - b.urutan);
+console.log(sorting);
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -82,8 +77,8 @@ const KelolaJamMain = () => {
       cell: (row) => (
         <Box display={"flex"} gap={"1"}>
           <ModalEditJamMain data={row} fetchData={fetchData} />
-          <Button onClick={() => deleteJamMain(row.id)} bgColor={"red.400"}>
-            <AiFillDelete />
+          <Button onClick={() => deleteJamMain(row.id)} bgColor={"red.500"}>
+            <AiFillDelete fill="white" />
           </Button>
         </Box>
       ), // Tombol aksi
@@ -113,7 +108,7 @@ const KelolaJamMain = () => {
               <ModalTambahJamMain fetchData={fetchData} />
               <DataTable
                 columns={columns}
-                data={indexJamMain}
+                data={sorting}
                 pagination
                 responsive
                 fixedHeader

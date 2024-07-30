@@ -12,13 +12,13 @@ import { API_ENDPOINT, getTimByIdTim } from "../Context/Config";
 import axios from "axios";
 import swal from "sweetalert";
 const TambahPemain = (props) => {
-  const { dataTim,fetchData } = props;
+  const { dataTim, fetchData } = props;
   const [namaPemain, setNamaPemain] = useState();
   const [noPunggung, setNoPunggung] = useState();
   const [posisi, setPosisi] = useState();
- 
+
   const tambahPemain = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       const response = await axios.post(`${API_ENDPOINT}/pemain`, {
         namaPemain: namaPemain,
@@ -27,8 +27,8 @@ const TambahPemain = (props) => {
         timId: dataTim.id,
       });
       swal("Berhasil", `${response.data.msg}`, "success");
-      fetchData()
-        } catch (error) {
+      fetchData();
+    } catch (error) {
       swal("Gagal", `${error.response.data.msg}`, "error");
     }
   };
@@ -36,7 +36,7 @@ const TambahPemain = (props) => {
   return (
     <Box>
       <form onSubmit={tambahPemain}>
-        <Box display={{lg:"flex ",sm:"block"}}>
+        <Box display={{ lg: "flex ", sm: "block" }}>
           <FormControl>
             <FormLabel>No Punggung</FormLabel>
             <Input
@@ -78,7 +78,7 @@ const TambahPemain = (props) => {
         </Box>
         <Button
           variant="solid"
-          bgColor={"#004c79"}
+          bgColor={"brand.utama"}
           color={"white"}
           _hover={{ bg: "#ffb606" }}
           mt={"6"}
@@ -93,7 +93,7 @@ const TambahPemain = (props) => {
 
 TambahPemain.propTypes = {
   dataTim: PropTypes.object.isRequired,
-  getTim:PropTypes.func.isRequired
+  getTim: PropTypes.func.isRequired,
 };
 
 export default TambahPemain;

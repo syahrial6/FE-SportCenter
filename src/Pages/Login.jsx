@@ -35,6 +35,7 @@ export default function Login() {
   const { login } = useContext(MyContext);
   const [dataLogin,setLogin] = useState([])
   const [showPassword, setShowPassword] = useState(false);
+  console.log(dataLogin)
 
   const handleShowClick = () => setShowPassword(!showPassword);
   

@@ -10,19 +10,22 @@ import Loading from "./Loading";
 import { PiProhibitBold } from "react-icons/pi";
 import ModalDetailPertandinganAdmin from "./ModalDetailPertandinganAdmin";
 import DataTable from "react-data-table-component";
-import dayjs from "dayjs";
+
 import ModalDetailEvent from "./ModalDetailEvent";
 import swal from "sweetalert";
 import { FaCheck } from "react-icons/fa";
 import { MyContext } from "../Context/Context";
 import ModalSetPgWasit from "./ModalSetPgWasit";
+import ModalReschedule from "./ModalReschedule";
+import ExportExcel from "./ExportExcel";
+
 
 // email masih dikirim ke satu user yaitu tim 2 perlu disetting lagi
 const TabelPertandingan = (props) => {
   const { dataReservasi,fetchData } = props || {};
   const { data } = useContext(MyContext);
-  console.log(dataReservasi);
-
+ 
+  
 
   // const searchData = async (e) => {
   //   var searchData = dataReservasi.filter((item) => {
@@ -39,6 +42,7 @@ const TabelPertandingan = (props) => {
   // };
 
   const izin_diberikan = async (row) => {
+    console.log(row)
     const konfirmasi = await swal({
       title: "Konfirmasi Perizinan",
       text: "Apakah Anda Yakin Akan Mengizinkan Reservasi Ini?",
@@ -52,7 +56,7 @@ const TabelPertandingan = (props) => {
           type: "createbilling",
           client_id: "001",
           trx_id: `12300${Math.floor(10000 + Math.random() * 90000)}`,
-          trx_amount: "100000",
+          trx_amount: `${row.biaya}`,
           billing_type: "c",
           customer_name: "Mr. Zakaria",
           customer_email: "xxx@email.com",
@@ -61,7 +65,7 @@ const TabelPertandingan = (props) => {
             10000000 + Math.random() * 90000000
           )}`,
           datetime_expired: new Date(
-            new Date().setDate(new Date().getDate() + 3)
+            new Date().setDate(new Date().getDate() + 1)
           ),
           description: `Pembayaran Sewa Stadion UNTAN`,
         });
@@ -89,7 +93,7 @@ const TabelPertandingan = (props) => {
       } catch (error) {
         swal({
           title: "Error",
-          text: `${error.response.data.message}`,
+          text: `${error}`,
           icon: "error",
         });
         console.log(error.response);
@@ -180,23 +184,39 @@ const TabelPertandingan = (props) => {
           <Badge colorScheme="green">Diberikan</Badge>
         ),
 
-      maxWidth: "200px",
+      maxWidth: "100px",
+      sortable: true,
     },
     {
-      name: "Pembayaran",
-      selector: (row) =>
-        !row.virtualAccount
-          ? "Belum Dibuat"
-          : !row.pembayaran.datetime_payment &&
-            dayjs(row.pembayaran.datetime_expired).unix() -
-              dayjs(new Date().toISOString()).unix() <=
-              0
-          ? "Expired"
-          : !row.pembayaran.datetime_payment
-          ? "Menunggu"
-          : "Sukses",
-      maxWidth: "150px",
+      name: "Status Bayar",
+      selector: (row) => {
+        if (row.pembayaran && row.pembayaran.datetime_payment === null) {
+          return <Badge colorScheme="yellow">Belum Bayar</Badge>;
+        } else if (row.pembayaran && row.pembayaran.datetime_payment !== null) {
+          return <Badge colorScheme="green">Sukses</Badge>;
+        } else {
+          return <Badge colorScheme="gray">Tidak Diketahui</Badge>; // Kondisi lain jika diperlukan
+        }
+      },
+      maxWidth: "200px",
+      sortable: true,
     },
+    
+    // {
+    //   name: "Pembayaran",
+    //   selector: (row) =>
+    //     !row.virtualAccount
+    //       ? "Belum Dibuat"
+    //       : !row.pembayaran.datetime_payment &&
+    //         dayjs(row.pembayaran.datetime_expired).unix() -
+    //           dayjs(new Date().toISOString()).unix() <=
+    //           0
+    //       ? "Expired"
+    //       : !row.pembayaran.datetime_payment
+    //       ? "Menunggu"
+    //       : "Sukses",
+    //   maxWidth: "150px",
+    // },
     {
       name: "Actions",
       cell: (row) => (
@@ -208,6 +228,7 @@ const TabelPertandingan = (props) => {
               <Button bgColor={"green.400"} onClick={() => izin_diberikan(row)}>
                 <FaCheck />
               </Button>
+           <ModalReschedule reservasi={row} getReservasi={getReservasi}/>
               <Button bgColor={"red.400"} onClick={() => izin_ditolak(row)}>
                 <PiProhibitBold />
               </Button>
@@ -222,15 +243,7 @@ const TabelPertandingan = (props) => {
 
   return (
     <Box overflowX={"auto"}>
-      <Box display={"flex"} justifyContent={"flex-end"}>
-        <Input
-          type="text"
-          placeholder="Search"
-          w={"30%"}
-          h={"15%"}
-          // onChange={searchData}
-        />
-      </Box>
+     
       <DataTable
         columns={columns}
         data={dataReservasi}
@@ -238,6 +251,7 @@ const TabelPertandingan = (props) => {
         // fixedHeader
         fixedHeaderScrollHeight={"100vh"}
       />
+      <ExportExcel data={dataReservasi} />
     </Box>
   );
 };

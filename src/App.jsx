@@ -17,7 +17,7 @@ import Perizinan from "./Pages/Perizinan";
 import KelolaWasit from "./Pages/KelolaWasit";
 
 import DetailTim from "./Pages/DetailTim";
-import Tombol from "./Pages/Test";
+import Test from "./Pages/Test";
 import KelolaTim from "./Pages/KelolaTim";
 import JadwalPemakaian from "./Pages/JadwalPemakaian";
 import BlacklistTim from "./Pages/BlacklistTim";
@@ -63,7 +63,7 @@ function App() {
           <Route element={<NotFound />} path="/*" />
 
 
-          <Route element={<Tombol />} path="/test" />
+          <Route element={<Test />} path="/test" />
         </Routes>
       </Parent>
     </BrowserRouter>

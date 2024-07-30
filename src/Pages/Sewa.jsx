@@ -18,23 +18,32 @@ import { useContext, useEffect, useState } from "react";
 import FormSewaSepakbola from "../components/FormSewaSepakbola";
 import FormNonSepakbola from "../components/FormNonSepakbola";
 import { MyContext } from "../Context/Context";
-import { useNavigate } from "react-router-dom";
-import swal from "sweetalert";
+
+
 import Loading from "../components/Loading";
 import { FaGlassWater } from "react-icons/fa6";
 import { getHariLibur, getReservasi } from "../Context/Config";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const Sewa = () => {
   const [jenisEvent, setJenisevent] = useState("");
   const { isLoggedIn, data } = useContext(MyContext);
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
   const [dataReservasi, setDataReservasi] = useState([]);
-  const navigate = useNavigate();
+
   const [dataHariLibur, setDataHariLibur] = useState([]);
   useEffect(()=>{
     fetchData()
   },[])
+
+  useEffect(()=>{
+    if (!isLoggedIn) {
+  
+      navigate("/login");
+    }
+  },[isLoggedIn])
 
   const fetchData = async () => {
     try {
@@ -52,13 +61,6 @@ const Sewa = () => {
 
 
   // pengecekan login
-  useEffect(() => {
-    if (!isLoggedIn) {
-      swal("Anda Harus Login Terlebih Dahulu", "", "error");
-      navigate("/login");
-    }
-  }, []);
-
  // mengecek ketersediaan lapangan ,menerima parameter tanggal dan jam main dari user , sedangkan dataReservasi di get dari API
   const cekKetersediaan = (tanggal, jamMulai,jamSelesai, dataReservasi) => {
     const waktuMulai = `${tanggal} ${jamMulai}`;
@@ -75,11 +77,11 @@ const Sewa = () => {
       if (waktuMulai <= reservasiWaktu && waktuSelesai >= reservasiWaktuSelesai) {
         array.push(reservasi);
       }
-      if (waktuMulai >= reservasiWaktu && waktuSelesai <= reservasiWaktuSelesai) {
+      else if (waktuMulai >= reservasiWaktu && waktuSelesai <= reservasiWaktuSelesai) {
         array.push(reservasi);
 
       }
-      console.log(array)
+     
   }
 
     if (array.length > 0) {

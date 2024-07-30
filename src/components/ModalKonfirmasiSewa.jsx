@@ -22,7 +22,6 @@ import swal from "sweetalert";
 import { NumericFormat } from "react-number-format";
 const ModalKonfirmasiSewa = (props) => {
   const { dataKonfirmasi, fungsiReservasi } = props;
-  console.log(dataKonfirmasi);
   const [tim1, setTim1] = useState([]);
   const [tim2, setTim2] = useState([]);
   const [loading, setLoading] = useState(false);

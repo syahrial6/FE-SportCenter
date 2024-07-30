@@ -18,11 +18,12 @@
     "@react-pdf/renderer": "^3.1.14",
     "@vetixy/circular-std": "^1.0.0",
     "antd": "^5.10.2",
-    "apexcharts": "^3.45.1",
+    "apexcharts": "^3.50.0",
     "axios": "^1.5.1",
     "date-holidays": "^3.23.3",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
+    "file-saver": "^2.0.5",
     "framer-motion": "^10.16.4",
     "jwt-decode": "^3.1.2",
     "prop-types": "^15.8.1",
@@ -30,7 +31,8 @@
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-copy-to-clipboard": "^5.1.0",
-    "react-data-table-component": "^7.5.4",
+    "react-data-table-component": "^7.6.2",
+    "react-data-table-component-extensions": "^1.6.0",
     "react-datetime-picker": "^5.6.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
@@ -38,7 +40,8 @@
     "react-paginate": "^8.2.0",
     "react-router-dom": "^6.14.2",
     "react-select": "^5.8.0",
-    "sweetalert": "^2.1.2"
+    "sweetalert": "^2.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",

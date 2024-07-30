@@ -12,6 +12,8 @@ import {
   Input,
   FormLabel,
   Select,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
@@ -22,7 +24,7 @@ import { MyContext } from "../Context/Context";
 import { FaPlus } from "react-icons/fa";
 
 const ModalAdminBlockingJadwal = (props) => {
-  const { getData } = props;
+  const { getData, cekKetersediaan, dataReservasi } = props;
   const { data } = useContext(MyContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [tanggal, setTanggal] = useState("");
@@ -31,12 +33,19 @@ const ModalAdminBlockingJadwal = (props) => {
   const [jamMain, setJamMain] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [keterangan, setKeterangan] = useState("");
-  const [check, setCheck] = useState(false);
-  console.log(check);
+  const [pengecekan, setPengecekan] = useState([]);
 
   useEffect(() => {
     getJamMain();
   }, []);
+
+  useEffect(() => {
+    if (dataReservasi.length !== 0) {
+      setPengecekan(
+        cekKetersediaan(tanggal, jamMulai, jamSelesai, dataReservasi)
+      );
+    }
+  }, [tanggal, jamMulai, jamSelesai, dataReservasi]);
 
   const handleChange = (e) => {
     const selectJam = e.target.value;
@@ -87,7 +96,7 @@ const ModalAdminBlockingJadwal = (props) => {
   }
   return (
     <Box display={"inline-block"}>
-      <Button color={"white"} bgColor={"blue.300"} onClick={() => onOpen()}>
+      <Button color={"white"} bgColor={"brand.utama"} onClick={() => onOpen()}>
         <Box mr={"2"}>
           <FaPlus />
         </Box>
@@ -123,7 +132,6 @@ const ModalAdminBlockingJadwal = (props) => {
               </FormControl>
               <FormControl mt="2%">
                 <FormLabel fontWeight={"normal"}>Sesi</FormLabel>
-                
               </FormControl>
               <FormControl mt="2%">
                 <FormLabel fontWeight={"normal"}>Keterangan</FormLabel>
@@ -133,7 +141,17 @@ const ModalAdminBlockingJadwal = (props) => {
                   type="text"
                 />
               </FormControl>
-              <Button type="submit">Submit</Button>
+              {pengecekan.length > 0 &&
+              pengecekan[0].pembayaran?.datetime_payment != null ? (
+                <Alert status="error">
+                  <AlertIcon />
+                  Sudah Di Booking
+                </Alert>
+              ) : null}
+              {pengecekan.length > 0 &&
+              pengecekan[0].pembayaran?.datetime_payment != null ? null : (
+                <Button type="submit">Submit</Button>
+              )}
             </form>
           </ModalBody>
           <ModalFooter></ModalFooter>

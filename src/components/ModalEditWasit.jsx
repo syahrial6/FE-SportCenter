@@ -55,7 +55,8 @@ const ModalEditWasit = (props) => {
             overflow={"hidden"}
             whiteSpace={"nowrap"}
             onClick={() => onOpen()}
-            bgColor={"brand.second"}
+            bgColor={"yellow.400"}
+            color={"white"}
           >
             <FaEdit/>
           </Button>

@@ -13,6 +13,7 @@ import Loading from "../components/Loading";
 const JadwalPemakaian = () => {
   const [dataReservasi, setDataReservasi] = useState([]);
   const [loading, setLoading] = useState(false);
+  console.log(dataReservasi);
 
   const fetchData = async () => {
     setLoading(true);
@@ -29,35 +30,66 @@ const JadwalPemakaian = () => {
     fetchData();
   }, []);
 
+  const cekKetersediaan = (tanggal, jamMulai, jamSelesai, dataReservasi) => {
+    const waktuMulai = `${tanggal} ${jamMulai}`;
+    const waktuSelesai = `${tanggal} ${jamSelesai}`;
+    const array = [];
+
+    for (const reservasi of dataReservasi) {
+      const reservasiWaktu = `${dayjs(reservasi.waktuMulaitgl).format(
+        "YYYY-MM-DD"
+      )} ${reservasi.waktuMulaijam}`;
+      const reservasiWaktuSelesai = `${dayjs(
+        reservasi.waktuSelesaitgl
+      ).format("YYYY-MM-DD")} ${reservasi.waktuSelesaijam}`;
+      if (
+        waktuMulai <= reservasiWaktu &&
+        waktuSelesai >= reservasiWaktuSelesai
+      ) {
+        array.push(reservasi);
+      } else if (
+        waktuMulai >= reservasiWaktu &&
+        waktuSelesai <= reservasiWaktuSelesai
+      ) {
+        array.push(reservasi);
+      }
+    }
+
+    if (array.length > 0) {
+      return array; // Mengembalikan array reservasi yang cocok dengan tanggal dan jamMulai yang diinputkan
+    } else {
+      return 0; // Tidak ada tanggal yang cocok dengan yang diinputkan
+    }
+  };
+
   // sebagai parameter untuk properti di kalendar
   // sebagai parameter untuk properti di kalendar
   const dateCellRender = (value) => {
     const date = value.format("YYYY-MM-DD");
-  
+
     const eventsForDate = dataReservasi.filter((reservasi) => {
       const waktuMulai = dayjs(reservasi.waktuMulaitgl).format("YYYY-MM-DD");
-      const waktuSelesai = dayjs(reservasi.waktuSelesaitgl).format("YYYY-MM-DD");
-  
+      const waktuSelesai = dayjs(reservasi.waktuSelesaitgl).format(
+        "YYYY-MM-DD"
+      );
+
       // Memeriksa apakah tanggal saat ini berada di antara tanggalMulai dan tanggalSelesai
       return date >= waktuMulai && date <= waktuSelesai;
     });
-  
-    // Modal untuk menampilkan detail di kalendar
+
+   
     return (
       <Box>
-        {eventsForDate.map((reservasi) => (
+        {eventsForDate.map((reservasi) =>
           reservasi.Tim1 && reservasi.Tim2 ? (
             <ModalDetailPertandinganAdmin
               reservasi={reservasi}
               key={reservasi.id}
             />
           ) : (
-            <ModalDetailEvent
-              reservasi={reservasi}
-              key={reservasi.id}
-            />
+            <ModalDetailEvent reservasi={reservasi} key={reservasi.id} />
           )
-        ))}
+        )}
       </Box>
     );
   };
@@ -65,34 +97,35 @@ const JadwalPemakaian = () => {
     <Box>
       <WithAction />
       <Sidebar>
-      {
-  loading ? (
-    <Loading />
-  ) : (
-    <>
-      <Text
-        fontSize={"4xl"}
-        fontWeight={"bold"}
-        textAlign={"center"}
-        mt={"12"}
-        fontFamily={"Rubik Variable"}
-      >
-        Jadwal Pemakaian
-      </Text>
-      <Box m={"4"} p={"4"} bgColor={"white"} overflowX={"auto"}>
-        <ModalAdminBlockingJadwal getData={fetchData} />
-        <Calendar
-          style={{
-            width: "100%",
-            overflow: "hidden",
-          }}
-          cellRender={dateCellRender}
-        />
-      </Box>
-    </>
-  )
-}
-
+        {loading ? (
+          <Loading />
+        ) : (
+          <>
+            <Text
+              fontSize={"4xl"}
+              fontWeight={"bold"}
+              textAlign={"center"}
+              mt={"12"}
+              fontFamily={"Rubik Variable"}
+            >
+              Jadwal Pemakaian
+            </Text>
+            <Box m={"4"} p={"4"} bgColor={"white"} overflowX={"auto"}>
+              <ModalAdminBlockingJadwal
+                getData={fetchData}
+                cekKetersediaan={cekKetersediaan}
+                dataReservasi={dataReservasi}
+              />
+              <Calendar
+                style={{
+                  width: "100%",
+                  overflow: "hidden",
+                }}
+                cellRender={dateCellRender}
+              />
+            </Box>
+          </>
+        )}
       </Sidebar>
     </Box>
   );

@@ -19,6 +19,7 @@ import { useState } from "react";
 import { API_ENDPOINT } from "../Context/Config";
 import swal from "sweetalert";
 import PropTypes from "prop-types";
+import { FaEdit } from "react-icons/fa";
 
 const ModalEditTim = (props) => {
   const { tim, fetchData } = props;
@@ -89,10 +90,10 @@ const ModalEditTim = (props) => {
           whiteSpace={"nowrap"}
           onClick={() => onOpen()}
           display={"block"}
-          bgColor={"brand.second"}
+          bgColor={"yellow.400"}
           color={"white"}
         >
-          Edit Tim
+          <FaEdit fill="white"/>
         </Button>
         <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
@@ -124,7 +125,7 @@ const ModalEditTim = (props) => {
                       onChange={(e) => setNamatim(e.target.value)}
                     />
                   </FormControl>
-                  <Button onClick={() => onClose()} mt={"4"} type="submit">
+                  <Button onClick={() => onClose()} mt={"4"} type="submit" color={"white"} bg={"brand.utama"}>
                     Submit
                   </Button>
                 </form>

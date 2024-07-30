@@ -32,7 +32,6 @@ const SetTarif = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_ENDPOINT}/tariflapangan`);
-      console.log(response.data);
       setTarif(response.data);
       setLoading(false);
     } catch (error) {

@@ -10,6 +10,8 @@ const theme = extendTheme({
       utama: "#1083c7",
       second: "#ffb606",
       third: "#004c79",
+      edit:"yellow.400",
+      delete:"red.400"
     },
   },
   

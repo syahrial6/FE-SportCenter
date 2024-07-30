@@ -49,9 +49,10 @@ const ModalEditJamMain = (props) => {
           overflow={"hidden"}
           whiteSpace={"nowrap"}
           onClick={() => onOpen()}
-          bgColor={"brand.second"}
+          bgColor={"yellow.400"}
+        
         >
-          <FaEdit />
+          <FaEdit fill="white" />
         </Button>
         <Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />

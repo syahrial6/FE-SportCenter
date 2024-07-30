@@ -43,10 +43,12 @@ const FormSewaSepakbola = (props) => {
   const [cekLibur, setCekLibur] = useState(false);
   const [pakaiPg, setPakaiPg] = useState(true);
   const [tarif, setTarif] = useState([]);
+
   // ---------------------------------------------
 
   // state ini digunakan untuk ternary operator jika sudah ada reservasi maka ada alert
   const [pengecekan, setPengecekan] = useState([]);
+  console.log(pengecekan);
 
   const dataKonfirmasi = {
     tim1: selected.id,
@@ -82,10 +84,12 @@ const FormSewaSepakbola = (props) => {
   // useeffect untuk pengecekan jadwal tersedia dan hari libur
   useEffect(() => {
     if (dataReservasi.length !== 0) {
-      setPengecekan(cekKetersediaan(tanggal, jamMulai, jamSelesai,dataReservasi));
+      setPengecekan(
+        cekKetersediaan(tanggal, jamMulai, jamSelesai, dataReservasi)
+      );
       setCekLibur(fungsiCekLibur(tanggal, dataHariLibur));
     }
-  }, [tanggal, jamMulai,jamSelesai, dataReservasi]);
+  }, [tanggal, jamMulai, jamSelesai, dataReservasi]);
 
   const reservasi = async () => {
     try {
@@ -95,6 +99,7 @@ const FormSewaSepakbola = (props) => {
         idTim1: `${selected.id}`,
         idTim2: `${selected2.id}`,
         biaya: dataKonfirmasi.biaya_sewa + dataKonfirmasi.fotographer,
+        isFotographer: pakaiPg,
       });
       swal({
         title: "Good job!",
@@ -102,7 +107,6 @@ const FormSewaSepakbola = (props) => {
         icon: "success",
       });
     } catch (error) {
-      console.log(error.response.data);
       swal({
         title: "Error!",
         text: `${error.response.data.msg}`,
@@ -177,17 +181,19 @@ const FormSewaSepakbola = (props) => {
             </Box>
             <Box textAlign={"center"}>
               {pengecekan.length > 0 &&
-              pengecekan[0].pembayaran?.datetime_payment != null ? (
-                <Alert status="error">
-                  <AlertIcon />
-                  Sudah Di Booking
-                </Alert>
-              ) : pengecekan.length > 0 ? (
-                <Alert status="success">
-                  <AlertIcon />
-                  Sudah Ada {pengecekan.length} Reservasi Menunggu
-                </Alert>
-              ) : null}
+                (pengecekan[0].pembayaran?.datetime_payment != null ||
+                pengecekan[0].user?.role === "admin" ? (
+                  <Alert status="error">
+                    <AlertIcon />
+                    Sudah Di Booking
+                  </Alert>
+                ) : (
+                  <Alert status="success">
+                    <AlertIcon />
+                    Sudah Ada {pengecekan.length} Reservasi Menunggu
+                  </Alert>
+                ))}
+
               <Text fontSize={"4xl"} fontWeight={"bold"}>
                 VS
               </Text>
@@ -268,7 +274,8 @@ const FormSewaSepakbola = (props) => {
           </Box>
           <Center my={"6"}>
             {pengecekan.length > 0 &&
-            pengecekan[0].pembayaran?.datetime_payment != null ? null : (
+            (pengecekan[0].pembayaran?.datetime_payment != null ||
+              pengecekan[0].user?.role === "admin") ? null : (
               <ModalKonfirmasiSewa
                 dataKonfirmasi={dataKonfirmasi}
                 fungsiReservasi={reservasi}

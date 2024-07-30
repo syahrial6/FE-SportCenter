@@ -26,7 +26,7 @@ const Verifikasi = () => {
   console.log(id);
 
   useEffect(() => {
-    // kirim_otp();
+    kirim_otp();
   }, []);
 
   const kirim_otp = async () => {

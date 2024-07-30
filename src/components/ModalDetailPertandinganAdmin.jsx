@@ -32,7 +32,8 @@ const ModalDetailPertandinganAdmin = (props) => {
   const [dataTim2, setDataTim2] = useState([]);
   const [Pemain1, setPemain1] = useState([]);
   const [Pemain2, setPemain2] = useState([]);
-  console.log(reservasi)
+  
+ 
 
   const getTim1 = async (id) => {
     const response = await axios.get(`${API_ENDPOINT}/tims/${id}`);
@@ -99,6 +100,10 @@ const ModalDetailPertandinganAdmin = (props) => {
                     <Text textAlign={"center"} fontSize={"3xl"}>
                       {dataTim1.namaTim}
                     </Text>
+                    <Text textAlign={"center"} fontSize={"xl"}>
+                      Manager : {dataTim1.user?.nama}
+                    </Text>
+
                     <TabelInfo dataTim={Pemain1} />
                   </Box>
                   <Box textAlign={"center"}>
@@ -132,14 +137,14 @@ const ModalDetailPertandinganAdmin = (props) => {
                           <Tr>
                             <Td>Tanggal</Td>
                             <Td>
-                              {dayjs(reservasi.tanggal).format(
+                              {dayjs(reservasi.waktuMulaitgl).format(
                                 "D MMMM YYYY"
                               )}
                             </Td>
                           </Tr>
                           <Tr>
                             <Td>Waktu</Td>
-                            <Td>{`${reservasi.waktuMulai} - ${reservasi.waktuSelesai}`}</Td>
+                            <Td>{`${reservasi.waktuMulaijam} - ${reservasi.waktuSelesaijam}`}</Td>
                           </Tr>
                           <Tr>
                             <Td>Wasit</Td>
@@ -161,7 +166,6 @@ const ModalDetailPertandinganAdmin = (props) => {
                         </Tbody>
                         
                       </Table>
-                      {reservasi.urlFoto ?   (<Button bgColor={"brand.utama"}><Link target="_blank" href={reservasi.urlFoto}>Url Foto</Link></Button>) : ""}
                   
                     </TableContainer>
                   </Box>
@@ -176,6 +180,9 @@ const ModalDetailPertandinganAdmin = (props) => {
                       />
                     </Center>
                     <Text fontSize={"3xl"}>{dataTim2.namaTim}</Text>
+                    <Text textAlign={"center"} fontSize={"xl"}>
+                      Manager : {dataTim2.user?.nama}
+                    </Text>
                     <TabelInfo dataTim={Pemain2} />
                   </Box>
                 </Grid>

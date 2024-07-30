@@ -15,9 +15,9 @@ export const getUser = async (search) => {
   }
 };
 
-export const getReservasi = async () => {
+export const getReservasi = async (bulan,tahun) => {
   try {
-    const response = await axios.get(`${API_ENDPOINT}/reservasi`);
+    const response = await axios.get(`${API_ENDPOINT}/reservasi?bulan=${bulan}&tahun=${tahun}`);
     const array2 = response.data.map((item) => ({
       title: item.judul || "Match Day",
       Tim1: item.Tim1 || "",
@@ -32,9 +32,10 @@ export const getReservasi = async () => {
       isPending: item.isPending,
       isVerified: item.isVerified,
       updatedAt: item.updatedAt,
-      trxId:item.trxId,
-      pembayaran:item.pembayaran || null,
-      virtualAccount:item.virtualAccount,
+      trxId: item.trxId,
+      biaya: item.biaya || "",
+      pembayaran: item.pembayaran || null,
+      virtualAccount: item.virtualAccount,
       waktuMulaitgl: dayjs(new Date(item.waktuMulai).toLocaleString()).format(
         "D MMMM YYYY"
       ),
@@ -48,8 +49,9 @@ export const getReservasi = async () => {
         new Date(item.waktuSelesai).toLocaleString()
       ).format("HH:mm:ss"),
       wasit: item.wasit || "",
+      user: item.user || null,
     }));
-      return array2;
+    return array2;
   } catch (error) {
     return error.response.data.msg;
   }
@@ -73,9 +75,10 @@ export const getReservasiComplete = async () => {
       isPending: item.isPending,
       isVerified: item.isVerified,
       updatedAt: item.updatedAt,
-      trxId:item.trxId,
-      pembayaran:item.pembayaran || null,
-      virtualAccount:item.virtualAccount,
+      trxId: item.trxId,
+      user: item.user,
+      pembayaran: item.pembayaran || null,
+      virtualAccount: item.virtualAccount,
       waktuMulaitgl: dayjs(new Date(item.waktuMulai).toLocaleString()).format(
         "D MMMM YYYY"
       ),
@@ -90,14 +93,22 @@ export const getReservasiComplete = async () => {
       ).format("HH:mm:ss"),
       wasit: item.wasit || "",
     }));
-    const array3 = array2.filter((item) => item.pembayaran? item.pembayaran.datetime_payment !== null : null);
-    return array3
+   
+  const array3 = array2.filter((item) => {
+    
+    if (item.pembayaran) {
+      return item.pembayaran.datetime_payment !== null;
+    }
+  
+  
+    return item.user ? item.user.role === "admin" : false;
+  });
+  return array3;
+    // ini masih ada masalah,karena admin tidak membayar maka dianggap tidak ada payment sehingga tidak tercantum
   } catch (error) {
     return error.response;
   }
 };
-
-
 
 export const getTim = async () => {
   try {
@@ -181,7 +192,9 @@ export const getJamMain = async () => {
 export const getHariLibur = async () => {
   try {
     const response = await axios.get(`${API_ENDPOINT}/libur`);
-    const array2 = response.data.filter((item) => item.is_national_holiday == true);
+    const array2 = response.data.filter(
+      (item) => item.is_national_holiday == true
+    );
     return array2;
   } catch (error) {
     return error.response.data.msg;
@@ -193,7 +206,71 @@ export const getTarif = async () => {
     const response = await axios.get(`${API_ENDPOINT}/tariflapangan`);
     return response.data;
   } catch (error) {
-    return error.response.data
+    return error.response.data;
   }
 };
 
+export const getHistoryReservasi = async (idTim) => {
+  try {
+    const response = await axios.get(
+      `${API_ENDPOINT}/reservasi/tim/${idTim}`
+    );
+    const array2 = response.data.map((item) => ({
+      Tim1: item.Tim1,
+      Tim2: item.Tim2,
+      createdAt: item.createdAt,
+      fotographer: item.fotographer,
+      id: item.id,
+      score: item.score || "",
+      idTim1: item.idTim1,
+      idTim2: item.idTim2,
+      isPending: item.isPending,
+      isVerified: item.isVerified,
+      updatedAt: item.updatedAt,
+      virtualAccount: item.virtualAccount,
+      trxId: item.trxId,
+      isPaid: item.isPaid,
+      waktuMulai: dayjs(new Date(item.waktuMulai).toLocaleString()).format(
+        "HH:mm:ss"
+      ),
+      waktuSelesai: dayjs(
+        new Date(item.waktuSelesai).toLocaleString()
+      ).format("HH:mm:ss"),
+      tanggal: dayjs(new Date(item.waktuMulai).toLocaleString()).format(
+        "D MMMM YYYY"
+      ),
+      wasit: item.wasit,
+      pembayaran: item.pembayaran || null,
+    }));
+
+   return array2;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const getReservasiEventByIdUser = async (id) => {
+  try {
+    const response = await axios.get(`${API_ENDPOINT}/reservasievent/${id}`);
+    const array2 = response.data.map((item) => ({
+      judul: item.judul || "",
+     pembayaran: item.pembayaran || null,
+      waktuMulaitgl: dayjs(new Date(item.waktuMulai).toLocaleString()).format(
+        "D MMMM YYYY"
+      ),
+      waktuSelesaitgl: dayjs(
+        new Date(item.waktuSelesai).toLocaleString()
+      ).format("D MMMM YYYY"),
+      waktuMulaijam: dayjs(new Date(item.waktuMulai).toLocaleString()).format(
+        "HH:mm:ss"
+      ),
+      waktuSelesaijam: dayjs(
+        new Date(item.waktuSelesai).toLocaleString()
+      ).format("HH:mm:ss"),
+    }));
+    return array2;
+  } catch (error) {
+    return error.response.data.msg;
+    
+  }
+}

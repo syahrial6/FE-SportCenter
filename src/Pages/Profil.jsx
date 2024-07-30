@@ -20,12 +20,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MyContext } from "../Context/Context";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
-
-import { getTimByIdUser } from "../Context/Config";
+import swal from "sweetalert";
+import axios from "axios";
+import { API_ENDPOINT } from "../Context/Config";
+import {
+  getHistoryReservasi,
+  getReservasiEventByIdUser,
+  getTimByIdUser,
+} from "../Context/Config";
 import CardProfil from "../components/CardProfil";
 import Loading from "../components/Loading";
 import ModalReservasiUser from "../components/ModalReservasiUser";
 import ModalEditTim from "../components/ModalEditTim";
+import CardTransaksiAktif from "../components/CardTransaksiAktif";
+import CardHistoryReservasiEvent from "../components/CardHistoryReservasiEvent";
+import DataTable from "react-data-table-component";
+import { AiFillDelete } from "react-icons/ai";
+
 
 const Profil = () => {
   const { isLoggedIn, data, cek_jwt } = useContext(MyContext);
@@ -33,7 +44,8 @@ const Profil = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [isLoading, setLoading] = useState(false);
-  
+  const [dataReservasiEvent, setDataReservasiEvent] = useState([]);
+
   // pengecekan login
   useEffect(() => {
     if (!isLoggedIn) {
@@ -44,22 +56,59 @@ const Profil = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const data = await getTimByIdUser(id);
-      setDatatim(data);
+      setDataReservasiEvent(await getReservasiEventByIdUser(id));
+      setDatatim(await getTimByIdUser(id));
     } catch (error) {
-      // Tangani error jika ada
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
-  
 
   // pengecekan waktu login apakah sudah exp
   useEffect(() => {
     cek_jwt();
     fetchData();
   }, [data]);
+
+  const columns = [
+    {
+      name: "No",
+      selector: (row, index) => index + 1,
+      sortable: true,
+      width: "10px",
+    },
+    {
+      name: "Reservasi",
+      selector: (row) => <CardHistoryReservasiEvent reservasi={row} />,
+      sortable: true,
+      width: "100",
+    },
+  ];
+
+  const deleteTim = async (id) => {
+    const konfirmasi = await swal({
+      title: "Apakah Kamu Yakin?",
+      text: "Akan Menghapus Tim",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    });
+    if (konfirmasi) {
+      try {
+        const response = await axios.patch(`${API_ENDPOINT}/deletetim/${id}`);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+      swal("Data Berhasil Dihapus ", {
+        icon: "success",
+      });
+      fetchData();
+    } else {
+     ""
+    }
+  }
 
   return isLoading ? (
     <Loading />
@@ -77,7 +126,6 @@ const Profil = () => {
           fontSize={"4xl"}
         >
           Profil Akun
-      
         </Text>
         <Box
           position="absolute"
@@ -108,15 +156,7 @@ const Profil = () => {
                 />
 
                 <Box shadow={"2xl"}>
-                  <Box>
-                    <Text
-                      fontSize={"4xl"}
-                      fontWeight={"bold"}
-                      textAlign={"center"}
-                    >
-                      Info Squad
-                    </Text>
-                  </Box>
+                  <Box></Box>
                   <Center>
                     {dataTim.length == 14 ? (
                       <Box>
@@ -127,91 +167,132 @@ const Profil = () => {
                         >
                           Belum Ada Squad
                         </Text>{" "}
-                        <Center>
-                          <Button>
-                            <RouterLink to={`/buattim/${id}`}>
-                              Buat Tim
-                            </RouterLink>
-                          </Button>
-                        </Center>
                       </Box>
                     ) : (
                       <Box width={"100%"}>
-                        {dataTim.map((data, index) => (
-                          <Accordion key={index} allowToggle>
-                            <AccordionItem>
-                              <AccordionButton>
-                                <Box
-                                  as="span"
-                                  flex="1"
-                                  textAlign="left"
-                                  fontWeight={"bold"}
-                                  fontSize={"xl"}
-                                  display={"flex"}
-                                >
-                                  {data.namaTim}
-                                </Box>
-                                <AccordionIcon />
-                              </AccordionButton>
+                        <Box>
+                          <CardTransaksiAktif dataTim={dataTim} idUser={id} />
+                        </Box>
 
-                              <AccordionPanel pb={4}>
-                                <Box>
-                                  {data.isBlacklist == 1 ? (
-                                    <Alert
-                                      fontWeight={"normal"}
-                                      status="warning"
-                                    >
-                                      <AlertIcon />
-                                      Tim Ini Diblacklist
-                                    </Alert>
-                                  ) : (
-                                    ""
-                                  )}
+                        <Accordion allowToggle>
+                          <AccordionItem>
+                            <AccordionButton>
+                              <Box
+                                as="span"
+                                flex="1"
+                                textAlign="left"
+                                fontWeight={"bold"}
+                                fontSize={"xl"}
+                                display={"flex"}
+                              >
+                                Info Squad
+                              </Box>
+                              <AccordionIcon />
+                            </AccordionButton>
 
-                                  <Center>
-                                    <Image
-                                      borderRadius="full"
-                                      boxSize="150px"
-                                      src={data.url}
-                                      alt="Dan Abramov"
-                                    />
-                                  </Center>
-                                  <Text
-                                    textAlign={"center"}
-                                    fontWeight={"bold"}
-                                    fontSize={"4xl"}
-                                  >
-                                    {data.namaTim}
-                                  </Text>
-                                  <Center my={"4"} gap={"4"}>
-                                    <ModalEditTim tim={data} fetchData={fetchData} />
-                                    <ModalReservasiUser idTim={data.id}  />
-                                  </Center>
-                                </Box>
-                                {/* dataTim dikirim lewat props berisi detail tim,pemain,dll */}
-                                {/* fungsi getTim dikirim ke tabel agar ketika dihapus fungsi getTim dijalankan */}
-                                <Center>
-                                  <Tabel
-                                    dataTim={data}
-                                    fetchData={fetchData}
-                                  />
-                                </Center>
-                              </AccordionPanel>
-                            </AccordionItem>
-                          </Accordion>
-                        ))}
+                            <AccordionPanel pb={4}>
+                              {dataTim.map((data, index) => (
+                                <Accordion key={index} allowToggle>
+                                  <AccordionItem>
+                                    <AccordionButton>
+                                      <Box
+                                        as="span"
+                                        flex="1"
+                                        textAlign="left"
+                                        fontWeight={"bold"}
+                                        fontSize={"xl"}
+                                        display={"flex"}
+                                      >
+                                        {data.namaTim}
+                                      </Box>
+                                      <AccordionIcon />
+                                    </AccordionButton>
 
-                        <Center>
-                          <Button mt={"4"}
-                            bgColor={"brand.utama"}
-                            color={"white"}
-                            _hover={{ bgColor: "brand.utama" }}
-                          >
-                            <RouterLink to={`/buattim/${id}`}>
-                              Buat Tim
-                            </RouterLink>
-                          </Button>
-                        </Center>
+                                    <AccordionPanel pb={4}>
+                                      <Box>
+                                        {data.isBlacklist == 1 ? (
+                                          <Alert
+                                            fontWeight={"normal"}
+                                            status="warning"
+                                          >
+                                            <AlertIcon />
+                                            Tim Ini Diblacklist
+                                          </Alert>
+                                        ) : (
+                                          ""
+                                        )}
+
+                                        <Center>
+                                          <Image
+                                            borderRadius="full"
+                                            boxSize="150px"
+                                            src={data.url}
+                                            alt="Avatar"
+                                          />
+                                        </Center>
+                                        <Text
+                                          textAlign={"center"}
+                                          fontWeight={"bold"}
+                                          fontSize={"4xl"}
+                                        >
+                                          {data.namaTim}
+                                        </Text>
+                                        <Center my={"4"} gap={"4"}>
+                                          <ModalEditTim
+                                            tim={data}
+                                            fetchData={fetchData}
+                                          />
+                                          <ModalReservasiUser idTim={data.id} />
+                                          <Button onClick={()=> deleteTim(data.id)} bgColor={"red.600"} color={"white"}><AiFillDelete fill="white"/></Button>
+                                        </Center>
+                                      </Box>
+                                      {/* dataTim dikirim lewat props berisi detail tim,pemain,dll */}
+                                      {/* fungsi getTim dikirim ke tabel agar ketika dihapus fungsi getTim dijalankan */}
+                                      <Center>
+                                        <Tabel
+                                          dataTim={data}
+                                          fetchData={fetchData}
+                                        />
+                                      </Center>
+                                    </AccordionPanel>
+                                  </AccordionItem>
+                                </Accordion>
+                              ))}
+                              <Center>
+                                <Button bgColor={"brand.utama"} color={"white"} my={"2"}>
+                                  <RouterLink to={`/buattim/${id}`}>
+                                    Tambah Tim
+                                  </RouterLink>
+                                </Button>
+                              </Center>
+                            </AccordionPanel>
+                          </AccordionItem>
+                        </Accordion>
+                        <Accordion allowToggle>
+                          <AccordionItem>
+                            <AccordionButton>
+                              <Box
+                                as="span"
+                                flex="1"
+                                textAlign="left"
+                                fontWeight={"bold"}
+                                fontSize={"xl"}
+                                display={"flex"}
+                              >
+                                History Reservasi Event
+                              </Box>
+                              <AccordionIcon />
+                            </AccordionButton>
+
+                            <AccordionPanel pb={4}>
+                              <DataTable
+                                data={dataReservasiEvent}
+                                columns={columns}
+                                pagination
+                              />
+                            </AccordionPanel>
+                          </AccordionItem>
+                        </Accordion>
                       </Box>
                     )}
                   </Center>

@@ -101,10 +101,10 @@ const KelolaWasit = () => {
 
           <Button
            
-            bgColor={"red.400"}
+            bgColor={"red.500"}
             onClick={() => deleteWasit(row.id)}
           >
-            <AiFillDelete />
+            <AiFillDelete fill="white" />
           </Button>
         </Box>
       ), // Tombol aksi

@@ -32,9 +32,9 @@ const ModalSetPgWasit = (props) => {
   const [pilihWasit, setPilihWasit] = useState(
     reservasi.wasit ? reservasi.wasit.id : null
   );
+  console.log(pilihWasit)
   const [score1, setScore1] = useState(reservasi.score ? reservasi.score.split("-")[0]:"");
   const [score2, setScore2] = useState(reservasi.score ? reservasi.score.split("-")[1]:"");
-  console.log(reservasi)
   const [urlFoto, setUrlFoto] = useState(reservasi.urlFoto);
   useEffect(() => {
     getWasit();
@@ -56,7 +56,6 @@ const ModalSetPgWasit = (props) => {
       })}
       else{
         await axios.patch(`${API_ENDPOINT}/reservasi/pgwasit/${reservasi.id}`, {
-          tanggal: reservasi.tanggal,
           tim1: reservasi.Tim1.namaTim,
           tim2: reservasi.Tim2.namaTim,
           userId: reservasi.Tim2.userId,
